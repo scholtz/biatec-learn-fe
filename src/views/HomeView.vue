@@ -281,6 +281,18 @@ onMounted(() => {
                   <RadioButton v-model="state.answer" inputId="a2" name="answer" value="2" />
                   <label for="a2" class="ml-2">{{ state.box.answer2 }}</label>
                 </div>
+                <div class="flex align-items-center m-4" v-if="state.box.answer3">
+                  <RadioButton v-model="state.answer" inputId="a3" name="answer" value="3" />
+                  <label for="a2" class="ml-2">{{ state.box.answer3 }}</label>
+                </div>
+                <div class="flex align-items-center m-4" v-if="state.box.answer4">
+                  <RadioButton v-model="state.answer" inputId="a4" name="answer" value="4" />
+                  <label for="a2" class="ml-2">{{ state.box.answer4 }}</label>
+                </div>
+                <div class="flex align-items-center m-4" v-if="state.box.answer5">
+                  <RadioButton v-model="state.answer" inputId="a5" name="answer" value="5" />
+                  <label for="a2" class="ml-2">{{ state.box.answer5 }}</label>
+                </div>
               </div>
               <div class="col-12">
                 <Button class="m-2" @click="execute" v-if="store.state.authState.isAuthenticated">
