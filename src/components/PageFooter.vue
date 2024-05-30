@@ -28,7 +28,7 @@ onBeforeUnmount(() => {
 <template>
   <Card class="m-2 text-center">
     <template #content>
-      BiatecEarn is part of the Biatec Group -
+      BiatecLearn is part of the Biatec Group -
       <a href="https://www.biatec.io">https://www.biatec.io</a>
     </template>
   </Card>
