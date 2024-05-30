@@ -204,7 +204,7 @@ const makeThemes = () => {
     }
   ]
 
-  const ret = []
+  const ret: any[] = []
   for (const item of allowed) {
     ret.push({
       label: item.name,
