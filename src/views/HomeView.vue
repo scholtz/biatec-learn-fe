@@ -55,7 +55,7 @@ const load = async () => {
       return
     }
     const ref = getBiatecLearnAppReferences()
-    const appId = ref['testnet-v1.0']
+    const appId = ref['mainnet-v1.0']
     var algod = new algosdk.Algodv2(
       store.state.algodToken,
       store.state.algodHost,
@@ -99,7 +99,7 @@ const execute = async () => {
       return
     }
     const ref = getBiatecLearnAppReferences()
-    const appId = ref['testnet-v1.0']
+    const appId = ref['mainnet-v1.0']
     var algod = new algosdk.Algodv2(
       store.state.algodToken,
       store.state.algodHost,

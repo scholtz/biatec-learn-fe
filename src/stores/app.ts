@@ -25,7 +25,7 @@ const defaultState: IState = {
   authComponent: null,
   forceAuth: false,
 
-  algodHost: 'https://testnet-api.algonode.cloud',
+  algodHost: 'https://mainnet-api.algonode.cloud',
   algodPort: 443,
   algodToken: '',
 
