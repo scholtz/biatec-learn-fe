@@ -208,7 +208,7 @@ const execute = async () => {
   } catch (exc: any) {
     // Network request error. Received status 400 (): TransactionPool.Remember: transaction F3OC2LZSQVMP57HAVXZ6JILKNDANWK6YNHPH6IZSP4UDZZGCVHTA: logic eval error: assert failed pc=405. Details: app=674216950, pc=405, opcodes=intc_1 // 0; >; assert
     console.error(exc)
-    if (exc.message.indexOf('pc=405')) {
+    if (exc.message.indexOf('pc=405') > 0) {
       toast.add({
         severity: 'error',
         detail: 'This question has been already claimed maximum times',
