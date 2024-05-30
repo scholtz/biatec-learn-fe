@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: biatec
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: biatec-learn-main-deployment
+  namespace: biatec
+spec:
+  selector:
+    matchLabels:
+      app: biatec-learn-main
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: biatec-learn-main
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: biatec-learn-main
+          image: scholtz2/biatec-learn:1.2024.05.01-main
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 2
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 2
+            terminationGracePeriodSeconds: 1
+          volumeMounts:
+            - name: biatec-learn-main-conf
+              mountPath: /app/config.json
+              subPath: config.json
+      volumes:
+        - name: biatec-learn-main-conf
+          configMap:
+            name: biatec-learn-main-conf
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: biatec-learn-main-service
+  namespace: biatec
+spec:
+  type: ClusterIP
+  selector:
+    app: biatec-learn-main
+  ports:
+    - name: http
+      protocol: TCP
+      appProtocol: http
+      port: 8080
+      targetPort: 8080
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: biatec-learn-main
+  namespace: biatec
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+    nginx.ingress.kubernetes.io/backend-protocol: 'HTTP'
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  tls:
+    - hosts:
+        - learn.biatec.io
+        - www.learn.biatec.io
+      secretName: tls-learn.biatec.io
+  rules:
+    - host: learn.biatec.io
+      http:
+        paths:
+          - path: /(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: biatec-learn-main-service
+                port:
+                  number: 8080
+    - host: www.learn.biatec.io
+      http:
+        paths:
+          - path: /(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: biatec-learn-main-service
+                port:
+                  number: 8080
