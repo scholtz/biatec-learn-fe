@@ -31,7 +31,11 @@ const state = reactive({
   camera: false,
   id: '',
   box: null as IQuestion | null,
-  answer: 0
+  answer: 0,
+  asset: {
+    name: 'Algo',
+    decimals: 6
+  }
 })
 const onDecodeQR = (result: any) => {
   console.log('result', result)
@@ -67,8 +71,22 @@ const load = async () => {
     const boxRef = getBoxReferenceQuestion({ app: appId, hash: questionUint8 })
     const box = await algod.getApplicationBoxByName(appId, boxRef.name).do()
     const parsedBox = parseBiatecLearnBox(box.value)
+
+    if (parsedBox.assetId === 0n) {
+      state.asset = {
+        name: 'Algo',
+        decimals: 6
+      }
+    } else {
+      const asset = await algod.getAssetByID(Number(parsedBox.assetId)).do()
+      state.asset = {
+        name: asset['params']['name'],
+        decimals: asset['params']['decimals']
+      }
+    }
+
     state.box = parsedBox
-    console.log('BOX', parsedBox, Buffer.from(box.value).toString('hex'))
+    console.log('BOX', parsedBox, state.asset, Buffer.from(box.value).toString('hex'))
   } catch (exc: any) {
     console.error(exc)
     toast.add({
@@ -283,15 +301,15 @@ onMounted(() => {
                 </div>
                 <div class="flex align-items-center m-4" v-if="state.box.answer3">
                   <RadioButton v-model="state.answer" inputId="a3" name="answer" value="3" />
-                  <label for="a2" class="ml-2">{{ state.box.answer3 }}</label>
+                  <label for="a3" class="ml-2">{{ state.box.answer3 }}</label>
                 </div>
                 <div class="flex align-items-center m-4" v-if="state.box.answer4">
                   <RadioButton v-model="state.answer" inputId="a4" name="answer" value="4" />
-                  <label for="a2" class="ml-2">{{ state.box.answer4 }}</label>
+                  <label for="a4" class="ml-2">{{ state.box.answer4 }}</label>
                 </div>
                 <div class="flex align-items-center m-4" v-if="state.box.answer5">
                   <RadioButton v-model="state.answer" inputId="a5" name="answer" value="5" />
-                  <label for="a2" class="ml-2">{{ state.box.answer5 }}</label>
+                  <label for="a5" class="ml-2">{{ state.box.answer5 }}</label>
                 </div>
               </div>
               <div class="col-12">
@@ -300,6 +318,16 @@ onMounted(() => {
                 </Button>
               </div>
             </div>
+          </template>
+        </Card>
+        <Card class="col-12 md:col-offset-3 md:col-6 my-4" v-if="state.box && state.asset.name">
+          <template #content>
+            <div>
+              Reward: {{ Number(state.box.reward) / 10 ** state.asset.decimals }}
+              {{ state.asset.name }}
+            </div>
+            <div v-if="state.box.assetId > 0">Asset id: {{ state.box.assetId }}</div>
+            <div>Availability: {{ state.box.count }}</div>
           </template>
         </Card>
       </div>
